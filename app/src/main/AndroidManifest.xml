@@ -38,9 +38,9 @@
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".Controller.ReceiptRecycler.SellMenuActivity" />
-        <activity android:name=".EmployeeProfile" />
+
         <activity android:name=".test" />
-        <activity android:name=".ChooseCustomerFragment" />
+
         <activity android:name=".JsonDataExample" />
         <activity android:name=".ScanActivity" />
         <activity android:name=".LoginActivity">
