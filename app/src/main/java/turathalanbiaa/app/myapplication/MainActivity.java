@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import turathalanbiaa.app.myapplication.Controller.ReceiptRecycler.SellMenuActivity;
 import turathalanbiaa.app.myapplication.Controller.SharedPrefrencesSession.SessionManager;
+import turathalanbiaa.app.myapplication.blutooth.DeviceListActivity;
 import turathalanbiaa.app.myapplication.blutooth.Printer_Main_Activity;
 
 import java.util.HashMap;
@@ -92,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(getBaseContext(), Printer_Main_Activity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getBaseContext(), DeviceListActivity.class);
+//                startActivity(intent);
             }
 
         });

@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     session.createLoginSession(username,"232");
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);
+
                         startActivity(i);
                         finish();
 

@@ -455,7 +455,6 @@ public class Printer_Main_Activity extends Activity implements OnClickListener {
 
 
 
-
                     if (msg.length() > 0) {
                         if (thai.isChecked()) {
                             SendDataByte(PrinterCommand.POS_Print_Text(msg, THAI, 255, 0, 0, 0));
