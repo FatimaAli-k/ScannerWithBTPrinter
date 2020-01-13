@@ -11,9 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import turathalanbiaa.app.myapplication.Controller.ReceiptRecycler.SellMenuActivity;
 import com.google.android.gms.vision.barcode.Barcode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import info.androidhive.barcode.BarcodeReader;
+import turathalanbiaa.app.myapplication.Model.SellMenuItem;
 
 public class ScanActivity extends AppCompatActivity implements BarcodeReader.BarcodeReaderListener {
 
@@ -21,7 +23,7 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReader.Bar
     Integer scanFor;
 
     BarcodeReader barcodeReader;
-
+    ArrayList<SellMenuItem> menuItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,13 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReader.Bar
         setContentView(R.layout.scan);
         barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_scanner);
         scanFor=getIntent().getIntExtra("ScanFor",0);
+        menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("Items");
+
+//        Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
+//        intent.putExtra("Items",menuItems);
+//        intent.putExtra("code","99999999");
+//            startActivity(intent);
+
 
     }
     @Override
@@ -42,8 +51,10 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReader.Bar
 
             Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
             intent.putExtra("code", barcode.displayValue);
+        intent.putExtra("Items",menuItems);
         //intent.putExtra("LoadReceiptFragment", 1);
             startActivity(intent);
+
 
     }
 

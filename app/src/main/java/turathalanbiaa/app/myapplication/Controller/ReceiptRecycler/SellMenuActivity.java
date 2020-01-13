@@ -72,6 +72,9 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sell_menu_activity_layout);
         code = getIntent().getStringExtra("code");
+        if(code!=null){
+            menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("Items");
+        }
 
 //        String customerName= getIntent().getStringExtra("CustomerName");
 //        //get name from database
@@ -97,9 +100,7 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
        // getJsonItemsData();
 
         getJsonItemObj();
-        if(code!=null)
 
-            menuItems.add(item);
         //prepareItemData();
         // set up the RecyclerView
 
@@ -119,6 +120,7 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
                 Intent intent = new Intent(getBaseContext(), ScanActivity.class);
                 //2 for item
                 intent.putExtra("ScanFor",2);
+                intent.putExtra("Items",menuItems);
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(), "addnew " , Toast.LENGTH_SHORT).show();
 
@@ -300,82 +302,84 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
 //        AppController.getInstance().addToRequestQueue(req);
 //    }
 
-//    private void getItemsInfo() {
+
+
+    private void getItemsInfo() {
+
+
+        //if everything is fine
+        StringRequest stringRequest = new StringRequest(Request.Method.POST,url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Toast.makeText(getApplicationContext(),
+                                " wll "+response, Toast.LENGTH_LONG).show();
+                        try {
+                            //converting response to json object
+                            JSONArray obj = new JSONArray(response);
+
+                            String jsonResponse="";
+                            for (int i = 0; i < obj.length(); i++) {
+
+                                JSONObject jsonItem = (JSONObject) obj
+                                        .get(i);
+
+                                String name = jsonItem.getString("name");
+                                int price= jsonItem.getInt("price");
+                                int count= jsonItem.getInt("count");
+
+
+                                jsonResponse += "Name: " + name + "\n\n";
+                                jsonResponse += "Email: " + price + "\n\n";
+                                jsonResponse += "Home: " + count + "\n\n";
+
+
+                                item=new SellMenuItem();
+                                item.setItem_count(count);
+                                item.setItem_name(name);
+                                item.setItem_price(price);
+                                menuItems.add(item);
+
+                            }
+
+//                            String str="";
 //
 //
-//        //if everything is fine
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST,url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        Toast.makeText(getApplicationContext(),
-//                                " wll "+response, Toast.LENGTH_LONG).show();
-//                        try {
-//                            //converting response to json object
-//                            JSONArray obj = new JSONArray(response);
 //
-//                            String jsonResponse="";
-//                            for (int i = 0; i < response.length(); i++) {
+//                            for(int i=0;i<menuItems.size();i++){
 //
-//                                JSONObject jsonItem = (JSONObject) obj
-//                                        .get(i);
-//
-//                                String name = jsonItem.getString("name");
-//                                int price= jsonItem.getInt("price");
-//                                int count= jsonItem.getInt("count");
-//
-//
-//                                jsonResponse += "Name: " + name + "\n\n";
-//                                jsonResponse += "Email: " + price + "\n\n";
-//                                jsonResponse += "Home: " + count + "\n\n";
-//
-//
-//                                item=new SellMenuItem();
-//                                item.setItem_count(count);
-//                                item.setItem_name(name);
-//                                item.setItem_price(price);
-//                                menuItems.add(item);
-//
+//                                str+= "\n....................................\n "+menuItems.get(i).getItem_count()+"X "+
+//                                        menuItems.get(i).getItem_name()+"\t"+menuItems.get(i).getItem_price()+"IQD ";
 //                            }
-//
-////                            String str="";
-////
-////
-////
-////                            for(int i=0;i<menuItems.size();i++){
-////
-////                                str+= "\n....................................\n "+menuItems.get(i).getItem_count()+"X "+
-////                                        menuItems.get(i).getItem_name()+"\t"+menuItems.get(i).getItem_price()+"IQD ";
-////                            }
-//                            Toast.makeText(getApplicationContext(),
-//                                    " wll "+response, Toast.LENGTH_LONG).show();
-//                            adapter.notifyDataSetChanged();
-//                        } catch (JSONException e) {
-//                            Toast.makeText(getApplicationContext(),
-//                                    " // "+e, Toast.LENGTH_LONG).show();
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<>();
-//                params.put("barcode", "5435");
-//                return params;
-//            }
-//        };
-//
-//        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
-//    }
+                            Toast.makeText(getApplicationContext(),
+                                    " wll "+response, Toast.LENGTH_LONG).show();
+                            adapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(),
+                                    " // "+e, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("barcode", "5435");
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
 
     private void getJsonItemObj(){
         Map<String, String> params = new HashMap<>();
-        params.put("barcode", "5435");
+        params.put("barcode", code);
 
         showpDialog();
 
@@ -408,7 +412,7 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
                                 item.setItem_count(count);
                                 item.setItem_name(name);
                                 item.setItem_price(price);
-//                                menuItems.add(item);
+                                menuItems.add(item);
 
 
 
