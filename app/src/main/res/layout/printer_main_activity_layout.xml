@@ -33,6 +33,12 @@
         android:text="@string/btnSend"
         >
     </Button>
+
+    <Button
+        android:id="@+id/doneBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
 </LinearLayout>
 
     <EditText

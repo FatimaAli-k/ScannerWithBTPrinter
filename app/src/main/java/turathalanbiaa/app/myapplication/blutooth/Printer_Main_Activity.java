@@ -16,6 +16,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 import turathalanbiaa.app.myapplication.Controller.SharedPrefrencesSession.SessionManager;
+import turathalanbiaa.app.myapplication.MainActivity;
 import turathalanbiaa.app.myapplication.Model.SellMenuItem;
 import turathalanbiaa.app.myapplication.R;
 import turathalanbiaa.app.myapplication.command.Command;
@@ -280,6 +281,9 @@ public class Printer_Main_Activity extends Activity implements OnClickListener {
         sendButton = (Button) findViewById(R.id.Send_Button);
         sendButton.setOnClickListener(this);
 
+        Button doneBtn = (Button) findViewById(R.id.doneBtn);
+        doneBtn.setOnClickListener(this);
+
         testButton = (Button) findViewById(R.id.btn_test);
         testButton.setOnClickListener(this);
 
@@ -384,6 +388,13 @@ public class Printer_Main_Activity extends Activity implements OnClickListener {
                 startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
                 break;
             }
+
+            case R.id.doneBtn: {
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
+                break;
+            }
+
             case R.id.btn_close: {
                 mService.stop();
                 editText.setEnabled(false);

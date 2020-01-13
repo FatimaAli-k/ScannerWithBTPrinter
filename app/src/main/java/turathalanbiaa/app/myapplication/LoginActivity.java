@@ -36,7 +36,10 @@ public class LoginActivity extends AppCompatActivity {
     EditText txtUsername, txtPassword;
 
     // json object response url
-    private String urlJsonObj = "https://jsonblob.com/api/48637412-34ba-11ea-ad35-07e513ecf69d";
+    //private String urlJsonObj = "https://jsonblob.com/api/48637412-34ba-11ea-ad35-07e513ecf69d";
+    //private String urlJsonObj = "http://127.0.0.1:8000/api/user";
+    private String urlJsonObj = "http://10.0.2.2:8000/api/user";
+
     private String jsonResponseName,jsonResponseId;
     private TextView txtResponse;
     private static String TAG = LoginActivity.class.getSimpleName();
@@ -89,13 +92,8 @@ public class LoginActivity extends AppCompatActivity {
                 // Check if username, password is filled
                 if(username.trim().length() > 0 ){
 
+                    userLogin();
 
-                       //makeJsonObjectRequest();
-
-                    //userLogin(username);
-
-
-                    session.createLoginSession(username,"232");
                         Intent i = new Intent(getApplicationContext(), MainActivity.class);
 
                         startActivity(i);
@@ -111,11 +109,15 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-    private void makeJsonObjectRequest() {
+
+    private void userLogin() {
+        Map<String, String> params = new HashMap<>();
+        params.put("secret_word", txtUsername.getText().toString());
         showpDialog();
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-                urlJsonObj, null, new Response.Listener<JSONObject>() {
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                urlJsonObj, new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
@@ -125,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                     // Parsing json object response
                     // response will be a json object
                     String name = response.getString("name");
-                    String id=response.getString("username");
+                    String id=response.getString("id");
 //                    String email = response.getString("email");
 //                    JSONObject phone = response.getJSONObject("phone");
 //                    String home = phone.getString("home");
@@ -161,6 +163,8 @@ public class LoginActivity extends AppCompatActivity {
                 // hide the progress dialog
                 hidepDialog();
 
+
+
             }
 
         });
@@ -171,72 +175,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void userLogin(final String username) {
-
-
-        //if everything is fine
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,urlJsonObj,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                        try {
-                            //converting response to json object
-                            JSONObject obj = new JSONObject(response);
-
-                            //if no error in response
-                            if (!obj.getBoolean("error")) {
-                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-
-                                //getting the user from the response
-                                JSONObject userJson = obj.getJSONObject("user");
-
-
-                                String name = userJson.getString("name");
-//                                String id=userJson.getString("id");
-//                                //creating a new user object
-//                                User user = new User(
-//                                        userJson.getInt("id"),
-//                                        userJson.getString("username"),
-//                                        userJson.getString("email"),
-//                                        userJson.getString("gender")
-//                                );
-
-                                //storing the user in shared preferences
-                                jsonResponseName = "";
-                                jsonResponseName += name;
-//                                jsonResponseId="";
-//                                jsonResponseId+= id;
-                                TextView tx=findViewById(R.id.txtUsername);
-                                tx.setText(jsonResponseName);
-                               // session.createLoginSession(jsonResponseName,jsonResponseId);
-
-                                //starting the profile activity
-
-                            } else {
-                                Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("secret_key", username);
-                return params;
-            }
-        };
-
-        VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
-    }
     private void showpDialog() {
         if (!pDialog.isShowing())
             pDialog.show();

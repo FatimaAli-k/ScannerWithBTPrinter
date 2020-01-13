@@ -6,15 +6,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 /**
  * This class does all the work for setting up and managing Bluetooth
@@ -22,7 +27,7 @@ import android.util.Log;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class BluetoothService {
+public class BluetoothService  {
     // Debugging
     private static final String TAG = "BluetoothService";
     private static final boolean DEBUG = true;
@@ -58,7 +63,7 @@ public class BluetoothService {
         mState = STATE_NONE;
         mHandler = handler;
     }
-    
+
 
     /**
      * Set the current state of the connection
