@@ -45,29 +45,29 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReader.Bar
 //        intent.putExtra("code","99999999");
 //            startActivity(intent);
 
-        if(scanFor==2) {
-
-            Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
-            intent.putExtra("code","222");
-            intent.putExtra("Items", menuItems);
-//        intent.putExtra("sellMenuId",sellMenuId);
-
-            startActivity(intent);
-        }
-
-        //scan for menu id, send menu code and scan for =1 so sellMenuActivity an fetch json array instead
-        else if(scanFor==1){
-            try {
-                Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
-                intent.putExtra("code", "111");
-                intent.putExtra("ScanFor", 2);
-
-                startActivity(intent);
-            }catch (Exception e){
-                Toast.makeText(getApplicationContext(), "// "+e , Toast.LENGTH_SHORT).show();
-
-            }
-        }
+//        if(scanFor==2) {
+//
+//            Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
+//            intent.putExtra("code","222");
+//            intent.putExtra("Items", menuItems);
+////        intent.putExtra("sellMenuId",sellMenuId);
+//
+//            startActivity(intent);
+//        }
+//
+//        //scan for menu id, send menu code and scan for =1 so sellMenuActivity an fetch json array instead
+//        else if(scanFor==1){
+//            try {
+//                Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
+//                intent.putExtra("code", "111");
+//                intent.putExtra("ScanFor", 2);
+//
+//                startActivity(intent);
+//            }catch (Exception e){
+//                Toast.makeText(getApplicationContext(), "// "+e , Toast.LENGTH_SHORT).show();
+//
+//            }
+//        }
 
 
     }
