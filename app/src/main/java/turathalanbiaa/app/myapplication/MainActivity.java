@@ -63,10 +63,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                //crete new customer and new sell menu in db
+                //retrieve sell menu id and send it to SellMenuActivity
+                // String sellMenuId= getSellMenuId();
+
                 Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
+//                intent.putExtra("SellMenuId",sellMenuId);
                 startActivity(intent);
-                //crete new customer and new receipt in db
-                //scan item and add it
+
 
 
             }
@@ -77,10 +81,11 @@ public class MainActivity extends AppCompatActivity {
         oldCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //scan for customer id, retrieve items
+                //scan for sell menu id, retrieve items
 
                 Intent intent = new Intent(getBaseContext(), ScanActivity.class);
-                //1 for menu
+                //1 for sell menu id
+
                 intent.putExtra("ScanFor", 1);
 
                 startActivity(intent);
@@ -93,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-//                Intent intent = new Intent(getBaseContext(), DeviceListActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(getBaseContext(), JsonDataExample.class);
+                startActivity(intent);
             }
 
         });

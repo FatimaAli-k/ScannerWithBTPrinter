@@ -21,6 +21,7 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReader.Bar
 
     //1 for menu, 2 for item
     Integer scanFor;
+    String sellMenuId;
 
     BarcodeReader barcodeReader;
     ArrayList<SellMenuItem> menuItems = new ArrayList<>();
@@ -32,12 +33,41 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReader.Bar
         setContentView(R.layout.scan);
         barcodeReader = (BarcodeReader) getSupportFragmentManager().findFragmentById(R.id.barcode_scanner);
         scanFor=getIntent().getIntExtra("ScanFor",0);
-        menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("Items");
+        if(scanFor==2) {
+            menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("Items");
+        }
+//        sellMenuId = getIntent().getStringExtra("sellMenuId");
+
+
 
 //        Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
 //        intent.putExtra("Items",menuItems);
 //        intent.putExtra("code","99999999");
 //            startActivity(intent);
+
+        if(scanFor==2) {
+
+            Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
+            intent.putExtra("code","222");
+            intent.putExtra("Items", menuItems);
+//        intent.putExtra("sellMenuId",sellMenuId);
+
+            startActivity(intent);
+        }
+
+        //scan for menu id, send menu code and scan for =1 so sellMenuActivity an fetch json array instead
+        else if(scanFor==1){
+            try {
+                Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
+                intent.putExtra("code", "111");
+                intent.putExtra("ScanFor", 2);
+
+                startActivity(intent);
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), "// "+e , Toast.LENGTH_SHORT).show();
+
+            }
+        }
 
 
     }
@@ -47,13 +77,25 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReader.Bar
         barcodeReader.playBeep();
 
 
-
+// if scanning for item return item barcode, previous menu items and sell menu id
+        if(scanFor==2) {
 
             Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
             intent.putExtra("code", barcode.displayValue);
-        intent.putExtra("Items",menuItems);
-        //intent.putExtra("LoadReceiptFragment", 1);
+            intent.putExtra("Items", menuItems);
+//        intent.putExtra("sellMenuId",sellMenuId);
+
             startActivity(intent);
+        }
+
+        //scan for menu id, send menu code and scan for =1 so sellMenuActivity an fetch json array instead
+        else if(scanFor==1){
+            Intent intent = new Intent(getBaseContext(), SellMenuActivity.class);
+            intent.putExtra("code", barcode.displayValue);
+            intent.putExtra("ScanFor",2);
+
+            startActivity(intent);
+        }
 
 
     }

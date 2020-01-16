@@ -51,6 +51,10 @@ import java.util.Map;
 
 public class SellMenuActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
     String code;
+    String sellMenuId;
+
+//1 for menu, 2 for item
+    Integer scanFor;
 
     //class not in use
     CoordinatorLayout coordinatorLayout;
@@ -62,33 +66,19 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
     // Progress dialog
     private ProgressDialog pDialog;
 
-    private TextView txtResponse;
-
-
     //    MyRecyclerViewAdapter adapter;
     ArrayList<SellMenuItem> menuItems = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sell_menu_activity_layout);
+
+        scanFor=getIntent().getIntExtra("ScanFor",0);
+        //getting sell menu id from MainActivity
+        sellMenuId = getIntent().getStringExtra("sellMenuId");
+
+        //getting item barcode from Scan activity
         code = getIntent().getStringExtra("code");
-        if(code!=null){
-            menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("Items");
-        }
-
-//        String customerName= getIntent().getStringExtra("CustomerName");
-//        //get name from database
-//        TextView customer=findViewById(R.id.customer_name);
-//        customer.setText(customerName);
-
-
-        // data to populate the RecyclerView with
-//        ArrayList<String> menuItems = new ArrayList<>();
-//        menuItems.add(code);
-//        menuItems.add("434r3");
-//        menuItems.add("r43r");
-//        menuItems.add("343r");
-//        menuItems.add("ffrf3");
 
         //json
 
@@ -96,10 +86,33 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(false);
 
-        //
-       // getJsonItemsData();
 
-        getJsonItemObj();
+        if(code!=null){
+            if(scanFor==2){
+                //get menu id from scan and request json array
+                sellMenuId=code;
+                String url="https://jsonblob.com/api/c343b7e4-34c8-11ea-ad35-d729c7db8fd8";
+                //jsonblob doesnt accept string requests
+                //try using below function with api
+                //getSellMenuItemsArray(url);
+                makeJsonArrayRequest(url);
+
+            }
+
+            else {
+                String url="http://10.0.2.2:8000/api/item";
+                menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("Items");
+                getJsonItemObj(url);
+
+            }
+
+
+
+        }
+
+
+
+
 
         //prepareItemData();
         // set up the RecyclerView
@@ -120,9 +133,13 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
                 Intent intent = new Intent(getBaseContext(), ScanActivity.class);
                 //2 for item
                 intent.putExtra("ScanFor",2);
+                //send items
                 intent.putExtra("Items",menuItems);
+                //send sell menu id
+//                intent.putExtra("sellMenuId",sellMenuId);
+
                 startActivity(intent);
-                Toast.makeText(getApplicationContext(), "addnew " , Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "addnew " , Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -184,127 +201,71 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
 
 
     SellMenuItem item=new SellMenuItem();
-//    private void prepareItemData() {
-//        //code = getIntent().getStringExtra("code");
-//
-//
-//        item.setItem_count(1);
-//        item.setItem_name("حذاء رياضي قياس M ازرق");
-//        item.setItem_price(15000);
-//        menuItems.add(item);
-//
-//        item=new SellMenuItem();
-//        item.setItem_count(2);
-//        item.setItem_name("long winter hoodie, black with detachable sleeves");
-//        item.setItem_price(2000);
-//        menuItems.add(item);
-//
-//        item=new SellMenuItem();
-//        item.setItem_count(5);
-//        item.setItem_name("name");
-//        item.setItem_price(500000);
-//        menuItems.add(item);
-//
-//    }
+
+    private void makeJsonArrayRequest(String url) {
+        showpDialog();
+
+        JsonArrayRequest req = new JsonArrayRequest(url,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d(TAG, response.toString());
+
+                        try {
+                            // Parsing json array response
+                            // loop through each json object
+
+                            for (int i = 0; i < response.length(); i++) {
+
+                                JSONObject person = (JSONObject) response
+                                        .get(i);
+
+                                String name = person.getString("name");
+                                int price = person.getInt("price");
+
+
+                                item=new SellMenuItem();
+                                item.setItem_count(1);
+                                item.setItem_name(name);
+                                item.setItem_price(price);
+                                menuItems.add(item);
+
+
+                            }
+
+                            adapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(),
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+
+                        hidepDialog();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+                hidepDialog();
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(req);
+    }
+
 
     //String url="https://jsonblob.com/api/c343b7e4-34c8-11ea-ad35-d729c7db8fd8";
-    String url="http://10.0.2.2:8000/api/item";
-//    private void getJsonItemsData(){
-////        Map<String, String> params = new HashMap<>();
-////        params.put("barcode", code);
-//
-//        JSONObject requestBody = new JSONObject();
-//
-//        try {
-//            requestBody.put("barcode", code);
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//            showpDialog();
-//
-//
-//        JsonArrayRequest req = new JsonArrayRequest(url,
-//                new Response.Listener<JSONArray>()
-//
-//                {
-//
-//                    @Override
-//                    public void onResponse(JSONArray response) {
-//                        Log.d(TAG, response.toString());
-//
-//                        try {
-//                            // Parsing json array response
-//                            // loop through each json object
-//
-//                            String jsonResponse="";
-//                            for (int i = 0; i < response.length(); i++) {
-//
-//                                JSONObject jsonItem = (JSONObject) response
-//                                        .get(i);
-//
-//                                String name = jsonItem.getString("name");
-//                                int price= jsonItem.getInt("price");
-//                                int count= jsonItem.getInt("count");
-//
-//
-//                                jsonResponse += "Name: " + name + "\n\n";
-//                                jsonResponse += "Email: " + price + "\n\n";
-//                                jsonResponse += "Home: " + count + "\n\n";
-//
-//
-//                                 item=new SellMenuItem();
-//                                item.setItem_count(count);
-//                                item.setItem_name(name);
-//                                item.setItem_price(price);
-//                                menuItems.add(item);
-//
-//                            }
-//
-////                            String str="";
-////
-////
-////
-////                            for(int i=0;i<menuItems.size();i++){
-////
-////                                str+= "\n....................................\n "+menuItems.get(i).getItem_count()+"X "+
-////                                        menuItems.get(i).getItem_name()+"\t"+menuItems.get(i).getItem_price()+"IQD ";
-////                            }
-////                            Toast.makeText(getApplicationContext(),
-////                                    " "+str, Toast.LENGTH_LONG).show();
-//                            adapter.notifyDataSetChanged();
-//
-////                            txtResponse.setText(jsonResponse);
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                            Toast.makeText(getApplicationContext(),
-//                                    "Error: " + e.getMessage(),
-//                                    Toast.LENGTH_LONG).show();
-//                        }
-//
-//                        hidepDialog();
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                VolleyLog.d(TAG, "Error: " + error.getMessage());
-//                Toast.makeText(getApplicationContext(),
-//                        error.getMessage(), Toast.LENGTH_SHORT).show();
-//                hidepDialog();
-//            }
-//
-//        });
-//
-//        // Adding request to request queue
-//        AppController.getInstance().addToRequestQueue(req);
-//    }
+    //String url="http://10.0.2.2:8000/api/item";
 
 
 
-    private void getItemsInfo() {
+
+
+    private void getSellMenuItemsArray(String url) {
 
 
         //if everything is fine
@@ -313,12 +274,12 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
                     @Override
                     public void onResponse(String response) {
                         Toast.makeText(getApplicationContext(),
-                                " wll "+response, Toast.LENGTH_LONG).show();
+                                " // "+response, Toast.LENGTH_LONG).show();
                         try {
                             //converting response to json object
                             JSONArray obj = new JSONArray(response);
 
-                            String jsonResponse="";
+
                             for (int i = 0; i < obj.length(); i++) {
 
                                 JSONObject jsonItem = (JSONObject) obj
@@ -326,16 +287,12 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
 
                                 String name = jsonItem.getString("name");
                                 int price= jsonItem.getInt("price");
-                                int count= jsonItem.getInt("count");
+                              // String sellerId= jsonItem.getString("user_sell_it_id");
 
-
-                                jsonResponse += "Name: " + name + "\n\n";
-                                jsonResponse += "Email: " + price + "\n\n";
-                                jsonResponse += "Home: " + count + "\n\n";
 
 
                                 item=new SellMenuItem();
-                                item.setItem_count(count);
+                               // item.setItem_count(count);
                                 item.setItem_name(name);
                                 item.setItem_price(price);
                                 menuItems.add(item);
@@ -344,15 +301,13 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
 
 //                            String str="";
 //
-//
-//
 //                            for(int i=0;i<menuItems.size();i++){
 //
 //                                str+= "\n....................................\n "+menuItems.get(i).getItem_count()+"X "+
 //                                        menuItems.get(i).getItem_name()+"\t"+menuItems.get(i).getItem_price()+"IQD ";
 //                            }
                             Toast.makeText(getApplicationContext(),
-                                    " wll "+response, Toast.LENGTH_LONG).show();
+                                    " // "+response, Toast.LENGTH_LONG).show();
                             adapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(),
@@ -369,7 +324,7 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                params.put("barcode", "5435");
+                params.put("sell_menu_id", code);
                 return params;
             }
         };
@@ -377,7 +332,7 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    private void getJsonItemObj(){
+    private void getJsonItemObj(String url){
         Map<String, String> params = new HashMap<>();
         params.put("barcode", code);
 
@@ -394,31 +349,21 @@ public class SellMenuActivity extends AppCompatActivity implements MyRecyclerVie
                             // Parsing json array response
                             // loop through each json object
 
-                            String jsonResponse="";
+
 
                                 JSONObject jsonItem = (JSONObject) response;
 
                                 String name = jsonItem.getString("name");
                                 int price= jsonItem.getInt("price");
-                                int count= jsonItem.getInt("count");
-
-
-                                jsonResponse += "Name: " + name + "\n\n";
-                                jsonResponse += "Email: " + price + "\n\n";
-                                jsonResponse += "Home: " + count + "\n\n";
-
+                                //int count= jsonItem.getInt("count");
 
                                 item=new SellMenuItem();
-                                item.setItem_count(count);
+                                item.setItem_count(1);
                                 item.setItem_name(name);
                                 item.setItem_price(price);
                                 menuItems.add(item);
 
-
-
-//                            String str="";
-//
-//
+                                String str="";
 //
 //                            for(int i=0;i<menuItems.size();i++){
 //

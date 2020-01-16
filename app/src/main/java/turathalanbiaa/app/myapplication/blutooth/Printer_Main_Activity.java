@@ -281,8 +281,6 @@ public class Printer_Main_Activity extends Activity implements OnClickListener {
         sendButton = (Button) findViewById(R.id.Send_Button);
         sendButton.setOnClickListener(this);
 
-        Button doneBtn = (Button) findViewById(R.id.doneBtn);
-        doneBtn.setOnClickListener(this);
 
         testButton = (Button) findViewById(R.id.btn_test);
         testButton.setOnClickListener(this);
@@ -367,17 +365,17 @@ public class Printer_Main_Activity extends Activity implements OnClickListener {
         mService = new BluetoothService(this, mHandler);
     }
 
-    public String PrintSellMenu(){
-        String msg="";
-        ArrayList<SellMenuItem> menuItems = new ArrayList<>();
-        menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("PrintItems");
-
-        String m1=menuItems.get(0).getItem_name()+" "+menuItems.get(0).getItem_price()+" عدد "+menuItems.get(0).getItem_count()
-                +"\n"+menuItems.get(1).getItem_name()+" "+menuItems.get(1).getItem_price()+" عدد "+menuItems.get(1).getItem_count()
-                +"\n";
-        return msg;
-
-    }
+//    public String PrintSellMenu(){
+//        String msg="";
+//        ArrayList<SellMenuItem> menuItems = new ArrayList<>();
+//        menuItems = (ArrayList<SellMenuItem>) getIntent().getSerializableExtra("PrintItems");
+//
+//        String m1=menuItems.get(0).getItem_name()+" "+menuItems.get(0).getItem_price()+" عدد "+menuItems.get(0).getItem_count()
+//                +"\n"+menuItems.get(1).getItem_name()+" "+menuItems.get(1).getItem_price()+" عدد "+menuItems.get(1).getItem_count()
+//                +"\n";
+//        return msg;
+//
+//    }
 
     @Override
     public void onClick(View v) {
@@ -389,11 +387,6 @@ public class Printer_Main_Activity extends Activity implements OnClickListener {
                 break;
             }
 
-            case R.id.doneBtn: {
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intent);
-                break;
-            }
 
             case R.id.btn_close: {
                 mService.stop();
